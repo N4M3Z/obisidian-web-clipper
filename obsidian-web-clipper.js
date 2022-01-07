@@ -11,21 +11,21 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
     const folder = "";
 
     /* Optional tags  */
-    const tags = "#clippings";
+    const tags = "clippings";
 
     function getSelectionHtml() {
-        var html = "";
+        let html = "";
         if (typeof window.getSelection != "undefined") {
-            var sel = window.getSelection();
+            let sel = window.getSelection();
             if (sel.rangeCount) {
-                var container = document.createElement("div");
-                for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                let container = document.createElement("div");
+                for (let i = 0, len = sel.rangeCount; i < len; ++i) {
                     container.appendChild(sel.getRangeAt(i).cloneContents());
                 }
                 html = container.innerHTML;
             }
         } else if (typeof document.selection != "undefined") {
-            if (document.selection.type == "Text") {
+            if (document.selection.type === "Text") {
                 html = document.selection.createRange().htmlText;
             }
         }
@@ -54,16 +54,18 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
     }
     const fileName = getFileName(title);
 
+    let markdownify;
     if (selection) {
-        var markdownify = selection;
+        markdownify = selection;
     } else {
-        var markdownify = content;
+        markdownify = content;
     }
 
+    let vaultName;
     if (vault) {
-        var vaultName = '&vault=' + encodeURIComponent(`${vault}`);
+        vaultName = '&vault=' + encodeURIComponent(`${vault}`);
     } else {
-        var vaultName = '';
+        vaultName = '';
     }
 
     const markdownBody = new Turndown({
@@ -74,29 +76,43 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
         emDelimiter: '*',
     }).turndown(markdownify);
 
-    var date = new Date();
+    let date = new Date();
 
     function convertDate(date) {
-        var yyyy = date.getFullYear().toString();
-        var mm = (date.getMonth()+1).toString();
-        var dd  = date.getDate().toString();
-        var mmChars = mm.split('');
-        var ddChars = dd.split('');
+        let yyyy = date.getFullYear().toString();
+        let mm = (date.getMonth()+1).toString();
+        let dd  = date.getDate().toString();
+        let mmChars = mm.split('');
+        let ddChars = dd.split('');
         return yyyy + '-' + (mmChars[1]?mm:"0"+mmChars[0]) + '-' + (ddChars[1]?dd:"0"+ddChars[0]);
     }
 
+    let type = 'resource';
+    let description = '';
+    let starred = 'false';
+    let archived = 'false';
+    let tags = '#resource';
     const today = convertDate(date);
 
-    const fileContent =
-        "author:: " + byline + "\n"
-        + "source:: [" + title + "](" + document.URL + ")\n"
-        + "clipped:: [[" + today + "]]\n"
-        + "published:: \n\n"
-        + tags + "\n\n"
-        + markdownBody ;
+    const fileContent = '---\n'
+        + 'type: ' + type + '\n'
+        + 'description: ' + description + '\n'
+        + 'starred: ' + starred + '\n'
+        + 'archived: ' + archived + '\n'
+        + 'captured: ' + today + '\n'
+        + '---\n\n'
+        + title + '\n'
+        + 'Area::\n'
+        + 'Projects::\n'
+        + 'Author:: ' + byline + '\n'
+        + 'Publisher::\n'
+        + 'Source:: ' + document.URL + '\n'
+        + 'Files::\n'
+        + 'Tags:: ' + tags + '\n'
+        + markdownBody;
 
     document.location.href = "obsidian://new?"
-        + "file=" + encodeURIComponent(folder + fileName)
+        + "name=" + encodeURIComponent(folder + fileName)
         + "&content=" + encodeURIComponent(fileContent)
-        + vaultName ;
+        + vaultName;
 })
