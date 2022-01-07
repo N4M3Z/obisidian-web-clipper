@@ -5,13 +5,21 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
 }]) => {
 
     /* Optional vault name */
-    const vault = "";
+    const vault = "Vault";
 
     /* Optional folder name such as "Clippings/" */
-    const folder = "";
+    let folder = "Inbox";
+    if (!folder) {
+        folder = prompt("Folder:", "Inbox");
+    }
 
     /* Optional tags  */
-    const tags = "#resource";
+    let tags = "#resource";
+    let allowExtraTags = false;
+    if (allowExtraTags) {
+        let extraTags = prompt("Additional tags:", "#read");
+        tags += extraTags;
+    }
 
     function getSelectionHtml() {
         let html = "";
@@ -41,7 +49,7 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
     } = new Readability(document.cloneNode(true)).parse();
 
     function getFileName(fileName) {
-        var userAgent = window.navigator.userAgent,
+        let userAgent = window.navigator.userAgent,
             platform = window.navigator.platform,
             windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
 
@@ -100,7 +108,6 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
         + 'archived: ' + archived + '\n'
         + 'captured: ' + today + '\n'
         + '---\n\n'
-        + title + '\n'
         + 'Area::\n'
         + 'Projects::\n'
         + 'Author:: ' + byline + '\n'
@@ -108,10 +115,11 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
         + 'Source:: ' + document.URL + '\n'
         + 'Files::\n'
         + 'Tags:: ' + tags + '\n'
+        + '\n---\n'
         + markdownBody;
 
     document.location.href = "obsidian://new?"
-        + "name=" + encodeURIComponent(folder + fileName)
+        + "name=" + encodeURIComponent(folder + '/' + fileName)
         + "&content=" + encodeURIComponent(fileContent)
         + vaultName;
 })
