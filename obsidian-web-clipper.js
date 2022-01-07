@@ -11,7 +11,7 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
     const folder = "";
 
     /* Optional tags  */
-    const tags = "clippings";
+    const tags = "#resource";
 
     function getSelectionHtml() {
         let html = "";
@@ -91,7 +91,6 @@ javascript: Promise.all([import('https://unpkg.com/turndown@6.0.0?module'), impo
     let description = '';
     let starred = 'false';
     let archived = 'false';
-    let tags = '#resource';
     const today = convertDate(date);
 
     const fileContent = '---\n'
